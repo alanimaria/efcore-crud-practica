@@ -1,43 +1,48 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProyectoWebScrub.Models;
+using ProyectoWebScrub.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProyectoWebScrub.Controllers
 {
     public class ClienteController : Controller
     {
-        private static List<Cliente> clientes = new List<Cliente>()
-        {
-            new Cliente
-            {
-                Id = 1,
-                Nombre = "Juan Pérez",
-                Email = "juan@email.com",
-                Telefono = "8091234567",
-                FechaNacimiento = new DateOnly(1995,5,10)
-            }
-        };
+        private readonly TiendaContext _context;
 
-        public IActionResult Index()
+        public ClienteController(TiendaContext context)
         {
-            return View(clientes);
+            _context = context;
         }
 
+        // 🔹 LISTAR
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Clientes.ToListAsync());
+        }
+
+        // 🔹 CREAR (GET)
         public IActionResult Create()
         {
             return View();
         }
+
+        // 🔹 CREAR (POST)
         [HttpPost]
-        public IActionResult Create(Cliente cliente)
+        public async Task<IActionResult> Create(Cliente cliente)
         {
-            cliente.Id = clientes.Count + 1;
-
-            clientes.Add(cliente);
-
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                _context.Add(cliente);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(cliente);
         }
-        public IActionResult Edit(int id)
+
+        // 🔹 EDITAR (GET)
+        public async Task<IActionResult> Edit(int id)
         {
-            var cliente = clientes.FirstOrDefault(c => c.Id == id);
+            var cliente = await _context.Clientes.FindAsync(id);
 
             if (cliente == null)
             {
@@ -46,36 +51,34 @@ namespace ProyectoWebScrub.Controllers
 
             return View(cliente);
         }
+
+        // 🔹 EDITAR (POST)
         [HttpPost]
-        public IActionResult Edit(Cliente cliente)
+        public async Task<IActionResult> Edit(Cliente cliente)
         {
-            var clienteExistente = clientes.FirstOrDefault(c => c.Id == cliente.Id);
-
-            if (clienteExistente == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                _context.Update(cliente);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            clienteExistente.Nombre = cliente.Nombre;
-            clienteExistente.Email = cliente.Email;
-            clienteExistente.Telefono = cliente.Telefono;
-            clienteExistente.FechaNacimiento = cliente.FechaNacimiento;
-
-            return RedirectToAction("Index");
+            return View(cliente);
         }
-        public IActionResult Delete(int id)
+
+        // 🔹 ELIMINAR
+        public async Task<IActionResult> Delete(int id)
         {
-            var cliente = clientes.FirstOrDefault(c => c.Id == id);
+            var cliente = await _context.Clientes.FindAsync(id);
 
             if (cliente == null)
             {
                 return NotFound();
             }
 
-            clientes.Remove(cliente);
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
-
 }
