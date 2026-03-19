@@ -33,7 +33,7 @@ namespace ProyectoWebScrub.Controllers
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Cliente");
             }
 
             foreach (var error in result.Errors)
@@ -42,6 +42,40 @@ namespace ProyectoWebScrub.Controllers
             }
 
             return View();
+        }
+
+        // GET: Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Login
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var result = await _signInManager.PasswordSignInAsync(
+                email,
+                password,
+                false,
+                false
+            );
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Cliente");
+            }
+
+            ModelState.AddModelError("", "Credenciales incorrectas");
+            return View();
+        }
+
+        // POST: Logout
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

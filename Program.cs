@@ -7,14 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// 🔥 EF Core (tu contexto de la app)
+//  EF Core (tu contexto de la app)
 builder.Services.AddDbContext<TiendaContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
 
-// 🔐 Identity (usuarios, login, roles)
+//  Identity (usuarios, login, roles)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
@@ -44,7 +44,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// 🔐 IMPORTANTE: Authentication antes de Authorization
+// IMPORTANTE: Authentication antes de Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -52,10 +52,10 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Cliente}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-// 🔐 necesario para Identity (login, register, etc.)
+//  necesario para Identity (login, register, etc.)
 app.MapRazorPages();
 
 app.Run();

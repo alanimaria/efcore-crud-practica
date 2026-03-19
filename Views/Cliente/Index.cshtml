@@ -6,6 +6,17 @@
 
 <h2>Lista de Clientes</h2>
 
+
+<div class="mb-3">
+
+    <a href="/Home" class="btn btn-secondary">
+        Ir al Inicio
+    </a>
+
+  
+
+</div>
+
 <a asp-controller="Cliente" asp-action="Create" class="btn btn-success">
     Nuevo Cliente
 </a>
@@ -56,3 +67,8 @@
     </tbody>
 
 </table>
+<form asp-controller="Account" asp-action="Logout" method="post">
+    <button type="submit" class="btn btn-danger">
+        Cerrar sesión
+    </button>
+</form>
